@@ -9,7 +9,7 @@ import { GestionApiService } from 'src/app/services/gestion-api.service';
   standalone: false
 })
 export class BarChartComponent implements OnInit {
- 
+
   @Input() datosCategorias: number[] = [];
   @Input() nombresCategorias: string[] = [];
   @Input() backgroundColorCategorias: string[] = [];
@@ -20,7 +20,7 @@ export class BarChartComponent implements OnInit {
   public apiData: { categoria: string; totalResults: number }[] = [];
 
   constructor(private el: ElementRef, private renderer: Renderer2, private gestionServiceApi: GestionApiService) {}
- 
+
   ngOnInit(): void {
     console.log("Ejecuta bar-chart");
     this.inicializarChart();
@@ -36,16 +36,23 @@ export class BarChartComponent implements OnInit {
   }
 
   private inicializarChart() {
+    // Creamos el objeto datasetsByCompany similar a actualizarChart
+    const datasetsByCompany: { [key: string]: { label: string; data: number[]; backgroundColor: string[]; borderColor: string[]; borderWidth: number } } = {};
+
+    // Inicializamos los datasets por cada categoría
+    this.nombresCategorias.forEach((categoria, index) => {
+      datasetsByCompany[categoria] = {
+        label: 'Valores de ' + categoria,
+        data: [this.datosCategorias[index]],
+        backgroundColor: [this.backgroundColorCategorias[index]],
+        borderColor: [this.borderColorCategorias[index]],
+        borderWidth: 1
+      };
+    });
+
     const data = {
       labels: this.nombresCategorias,
-      datasets: [{
-        label: 'My First Dataset',
-        data: this.datosCategorias,
-        fill: false,
-        backgroundColor: this.backgroundColorCategorias,
-        borderColor: this.borderColorCategorias,
-        tension: 0.1
-      }]
+      datasets: Object.values(datasetsByCompany)
     };
 
     const canvas = this.renderer.createElement('canvas');
@@ -67,7 +74,7 @@ export class BarChartComponent implements OnInit {
         plugins: {
           legend: {
             labels: {
-              boxWidth: 0,
+              boxWidth: 20,
               font: {
                 size: 16,
                 weight: 'bold'
