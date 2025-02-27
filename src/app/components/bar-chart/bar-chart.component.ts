@@ -36,17 +36,26 @@ export class BarChartComponent implements OnInit {
   }
 
   private inicializarChart() {
+
+     // Tenemos que incializar los datassets para luego poder actualizarlos 
+    const datasetsByCompany: { [key: string]: { label: string; data: number[]; backgroundColor: string[]; borderColor: string[]; borderWidth: number } } = {};
+
+    // Inicializamos los datasets por cada categoría
+    this.nombresCategorias.forEach((categoria, index) => {
+      datasetsByCompany[categoria] = {
+        label: 'Valores de ' + categoria,
+        data: [this.datosCategorias[index]],
+        backgroundColor: [this.backgroundColorCategorias[index]],
+        borderColor: [this.borderColorCategorias[index]],
+        borderWidth: 1
+      };
+    });
+
     const data = {
       labels: this.nombresCategorias,
-      datasets: [{
-        label: 'My First Dataset',
-        data: this.datosCategorias,
-        fill: false,
-        backgroundColor: this.backgroundColorCategorias,
-        borderColor: this.borderColorCategorias,
-        tension: 0.1
-      }]
+      datasets: Object.values(datasetsByCompany)
     };
+
 
     const canvas = this.renderer.createElement('canvas');
     this.renderer.setAttribute(canvas, 'id', 'barChart');
@@ -67,7 +76,7 @@ export class BarChartComponent implements OnInit {
         plugins: {
           legend: {
             labels: {
-              boxWidth: 0,
+              boxWidth: 20,
               font: {
                 size: 16,
                 weight: 'bold'
