@@ -198,7 +198,7 @@ export class HomePage implements OnInit {
     doc.setFillColor('#CCCCCC');
     doc.rect(0, 0, doc.internal.pageSize.getWidth(), 55, 'F');
     
-    // Logo centrado
+    // Logo centrado 
     const imagen = "/assets/images/company-logo.png";
     const imgWidth = 45;
     const imgHeight = 45;
