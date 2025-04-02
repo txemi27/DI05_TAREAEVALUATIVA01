@@ -1,0 +1,34 @@
+.chart-container {
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  max-height: 800px;
+  margin: auto;
+  position: relative;
+  overflow: hidden;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+
+  canvas {
+    max-width: 100%;
+    height: auto !important;
+    object-fit: contain;
+  }
+}
+
+// Media queries para diferentes tamaños de pantalla
+@media screen and (max-width: 768px) {
+  .chart-container {
+    min-height: 250px;
+    padding: 0.5rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .chart-container {
+    min-height: 200px;
+    padding: 0.25rem;
+  }
+}

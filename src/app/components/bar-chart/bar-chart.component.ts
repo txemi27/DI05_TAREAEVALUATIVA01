@@ -1,6 +1,7 @@
-import { Component, OnInit, Renderer2, ElementRef, Input } from '@angular/core';
+import { Component, OnInit, Renderer2, ElementRef, Input, OnDestroy } from '@angular/core';
 import { Chart, ChartType } from 'chart.js/auto';
 import { GestionApiService } from 'src/app/services/gestion-api.service';
+import { ChartResizeService } from 'src/app/services/chart-resize.service';
 
 @Component({
   selector: 'app-bar-chart',
@@ -8,7 +9,7 @@ import { GestionApiService } from 'src/app/services/gestion-api.service';
   styleUrls: ['./bar-chart.component.scss'],
   standalone: false
 })
-export class BarChartComponent implements OnInit {
+export class BarChartComponent implements OnInit, OnDestroy {
  
   @Input() datosCategorias: number[] = [];
   @Input() nombresCategorias: string[] = [];
@@ -18,29 +19,45 @@ export class BarChartComponent implements OnInit {
 
   public chart!: Chart;
   public apiData: { categoria: string; totalResults: number }[] = [];
+  private container!: HTMLElement;
 
-  constructor(private el: ElementRef, private renderer: Renderer2, private gestionServiceApi: GestionApiService) {}
+  constructor(
+    private el: ElementRef, 
+    private renderer: Renderer2, 
+    private gestionServiceApi: GestionApiService,
+    private chartResizeService: ChartResizeService
+  ) {}
  
   ngOnInit(): void {
     console.log("Ejecuta bar-chart");
+    this.container = this.el.nativeElement.querySelector('#contenedor-barchart');
     this.inicializarChart();
 
-    // Nos suscribimos al observable de tipo BehaviorSubject
+    // Suscribirse a cambios de tamaño
+    this.chartResizeService.resize$.subscribe(() => {
+      if (this.chart) {
+        this.chartResizeService.resizeChart(this.chart, this.container);
+      }
+    });
+
+    // Suscribirse a datos de la API
     this.gestionServiceApi.datos$.subscribe((datos) => {
       if (datos != undefined) {
-        // Actualizamos apiData con los nuevos datos
         this.apiData.push(datos);
-        this.actualizarChart(); // Llamamos al método para actualizar el gráfico
+        this.actualizarChart();
       }
     });
   }
 
-  private inicializarChart() {
+  ngOnDestroy(): void {
+    if (this.chart) {
+      this.chart.destroy();
+    }
+  }
 
-     // Tenemos que incializar los datassets para luego poder actualizarlos 
+  private inicializarChart() {
     const datasetsByCompany: { [key: string]: { label: string; data: number[]; backgroundColor: string[]; borderColor: string[]; borderWidth: number } } = {};
 
-    // Inicializamos los datasets por cada categoría
     this.nombresCategorias.forEach((categoria, index) => {
       datasetsByCompany[categoria] = {
         label: 'Valores de ' + categoria,
@@ -56,11 +73,9 @@ export class BarChartComponent implements OnInit {
       datasets: Object.values(datasetsByCompany)
     };
 
-
     const canvas = this.renderer.createElement('canvas');
     this.renderer.setAttribute(canvas, 'id', 'barChart');
-    const container = this.el.nativeElement.querySelector('#contenedor-barchart');
-    this.renderer.appendChild(container, canvas);
+    this.renderer.appendChild(this.container, canvas);
 
     this.chart = new Chart(canvas, {
       type: 'bar' as ChartType,
@@ -87,8 +102,8 @@ export class BarChartComponent implements OnInit {
       }
     });
 
-    this.chart.canvas.width = 100;
-    this.chart.canvas.height = 100;
+    // Redimensionar inicialmente
+    this.chartResizeService.resizeChart(this.chart, this.container);
   }
 
   private actualizarChart() {

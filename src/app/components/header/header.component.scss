@@ -1,0 +1,45 @@
+.header-container {
+    background: #CCCCCC;
+    padding: 1rem;
+  }
+  
+  .company-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .logo-container {
+    text-align: center;
+    
+    .company-logo {
+      max-height: 100px;
+      width: auto;
+    }
+  }
+  
+  .company-details {
+    text-align: center;
+  
+    .company-name {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+  }
+  
+  .contact-info {
+    p {
+      margin: 0.25rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+  }
+  
+  .pdf-button {
+    margin-top: 1rem;
+    --background: #4a4a4a;
+  }

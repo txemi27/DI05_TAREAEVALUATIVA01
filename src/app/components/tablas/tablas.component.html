@@ -1,0 +1,19 @@
+<div *ngFor="let row of datosTabla | tablePipe: 10">
+  <div class="divTabla" [ngClass]="{'seccion': row.length <= 10}">
+    <!-- Aquí creamos una tabla por cada conjunto de 20 filas -->
+    <table class="mi-tabla">
+      <thead>
+        <tr>
+          <!-- Encabezados de la tabla -->
+          <th *ngFor="let item of row[0] | keyvalue">{{ item.key }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Filas de la tabla -->
+        <tr *ngFor="let fila of row">
+          <td *ngFor="let item of fila | keyvalue">{{ item.value }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
